@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.6)
+cmake_minimum_required(VERSION 2.6)
 project(HexFunctions)
 
 set(HexFunctions_src src/HexFunctions.cpp src/HexUtil.cpp)
