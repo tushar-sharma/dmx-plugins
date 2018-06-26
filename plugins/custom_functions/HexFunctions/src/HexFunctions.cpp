@@ -3,13 +3,27 @@
 #include "HexUtil.h"
 
 
-DMX_CUSTOM_FUNCTION(HexToString, DMX_STRING(text), DMX_STRING(input)) {
+DMX_CUSTOM_FUNCTION(HexToText, DMX_STRING(text), DMX_STRING(input)) {
+
     if (input.isNull()) {
         text.setNull();
     }
     else {
         //Hex conversion
-        text = HexUtil::HextToText(input);
+        text = HexUtil::hexToText(input);
+    }
+
+    return DMX_CUSTOM_FUNCTION_SUCCESS;
+}
+
+DMX_CUSTOM_FUNCTION(TextToHex, DMX_STRING(text), DMX_STRING(input)) {
+
+    if (input.isNull()) {
+        text.setNull();
+    }
+    else {
+        //Hex conversion
+        text = HexUtil::textToHex(input);
     }
 
     return DMX_CUSTOM_FUNCTION_SUCCESS;
