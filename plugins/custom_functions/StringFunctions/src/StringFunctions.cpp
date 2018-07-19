@@ -2,14 +2,13 @@
 #include "dmx_custom_functions.h"
 #include "StringUtil.h"
 
-
 DMX_CUSTOM_FUNCTION(StringReverse, DMX_STRING(text), DMX_STRING(input)) {
 
     if (input.isNull()) {
         text.setNull();
     }
     else {
-        //Hex conversion
+        //reverse a string
         text = StringUtil::stringReverse(input);
     }
 
