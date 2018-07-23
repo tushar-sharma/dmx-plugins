@@ -15,7 +15,7 @@ class StringUtil
 public:
     // reverse a string
     static std::string stringReverse(const std::string& text);
-    // most frequent word
+    // most frequent word with count
     static std::string frequentWord(const std::string& text);
 };
 

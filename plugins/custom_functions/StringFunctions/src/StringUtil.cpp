@@ -11,143 +11,163 @@
 #include <sstream>
 #include <numeric>
 
-struct trieNode {
-	bool isWord;
-	char key;
-	std::string text;
-	size_t frequency;
-	std::map<char, trieNode*> children;
-};
-
 /******************************************************************************/
 
+struct trieNode {
+    bool isWord;
+    char key;
+    std::string text;
+    size_t frequency;
+    std::map<char, trieNode*> children;
+};
+
+/****************************** MEMBER FUNCTION *******************************/
 std::string StringUtil::stringReverse(const std::string &text) {
-    //create a copy
+//
+//Purpose
+//-------
+//reverse a string
+//
     std::string copyText(text);
     std::reverse(copyText.begin(), copyText.end());
     return copyText;
 }
 
-/* 
- * create a new node
- */
+/****************************** MEMBER FUNCTION *******************************/
 trieNode* createNode(trieNode* parent, char key, bool isWord) {
+//
+//Purpose
+//-------
+// create a new Trie Node
+//
     trieNode *child = new trieNode;
-	child->isWord = false;
-	child->key = '\0';
-	child->frequency = 0;
+    child->isWord = false;
+    child->key = '\0';
+    child->frequency = 0;
 
-	if (parent != NULL) {
-		parent->isWord = isWord;
-		parent->key = key;
-		parent->children[key] = child; 
-		parent->frequency = 0;
-	} else {
-		parent = child;
-	}
+    if (parent != NULL) {
+        parent->isWord = isWord;
+        parent->key = key;
+        parent->children[key] = child;
+        parent->frequency = 0;
+    } else {
+        parent = child;
+    }
 
-	return parent;
+    return parent;
 }
 
-/**
- * returns NULL if character is not found in the map
- */
+/****************************** MEMBER FUNCTION *******************************/
 trieNode * checkIfKeyExist(trieNode* curr, char c) {
-	if (curr->children.find(c) == curr->children.end()) {
-		return NULL;
-	} else {
-		return curr;
-	}
+//
+//Purpose
+//-------
+// checks if a key exist in the map
+//
+    if (curr->children.find(c) == curr->children.end()) {
+        return NULL;
+    } else {
+        return curr;
+    }
 }
 
-/**
- * insert a character in a Trie
- */
+/****************************** MEMBER FUNCTION *******************************/
 void insertTrie(trieNode*& curr, std::string word) {
-	trieNode * currentNode = curr; 
+//
+//Purpose
+//-------
+// insert a stirng into Trie
+//
+    trieNode * currentNode = curr;
 
-	for (size_t i = 0; i < word.length(); i++) {
-		char key = word[i]; 
-		if (checkIfKeyExist(currentNode, key) == NULL) {
-			currentNode = createNode(currentNode, key, false);
-		} 
-		currentNode = currentNode->children[key];
-	}
+    for (size_t i = 0; i < word.length(); i++) {
+        char key = word[i];
+        if (checkIfKeyExist(currentNode, key) == NULL) {
+            currentNode = createNode(currentNode, key, false);
+        }
+        currentNode = currentNode->children[key];
+    }
     //for last node
-	currentNode->isWord = true;
-	currentNode->frequency = currentNode->frequency + 1; 
-	currentNode->text = word; 
+    currentNode->isWord = true;
+    currentNode->frequency = currentNode->frequency + 1;
+    currentNode->text = word;
 }
-/**
- * preorder traversal of a Trie 
-*/
+
+/****************************** MEMBER FUNCTION *******************************/
 void traverseTrie(trieNode* root, unsigned& maxCount, std::map<std::string, unsigned>& mFrequent) {
+//
+//Purpose
+//-------
+// Preorder traversal of Trie
+//
     trieNode* currentNode = root;
 
-	std::map<char, trieNode*>::iterator it;
+    std::map<char, trieNode*>::iterator it;
 
-	for (it = currentNode->children.begin(); it != currentNode->children.end(); it++) {
-		//if greater frequency word is found
-		if (maxCount < it->second->frequency) {	
-			mFrequent.clear();
-			maxCount = it->second->frequency;
-			mFrequent[it->second->text] = it->second->frequency;
-		}
-		//collect all words if same frequency
-		if (maxCount == it->second->frequency) {
-			//check if duplicates is not there
-			if ( mFrequent.find(it->second->text) == mFrequent.end() ) {
-				mFrequent[it->second->text] = it->second->frequency;
-			}
-		}
-		traverseTrie(it->second, maxCount, mFrequent);
-	}
+    for (it = currentNode->children.begin(); it != currentNode->children.end(); it++) {
+        //if greater frequency word is found
+        if (maxCount < it->second->frequency) {
+            mFrequent.clear();
+            maxCount = it->second->frequency;
+            mFrequent[it->second->text] = it->second->frequency;
+        }
+        //collect all words if same frequency
+        if (maxCount == it->second->frequency) {
+            //check if duplicates is not there
+            if ( mFrequent.find(it->second->text) == mFrequent.end() ) {
+                mFrequent[it->second->text] = it->second->frequency;
+            }
+        }
+        traverseTrie(it->second, maxCount, mFrequent);
+    }
 }
 
-/**
- * return the most frequent word along with its frequency
-*/
+/****************************** MEMBER FUNCTION *******************************/
 std::string StringUtil::frequentWord(const std::string &text) {
-
-	std::vector<std::string> sText;
-	std::stringstream streamText(text);
-	std::string currText;
-	std::string resultText = "";
+//
+//Purpose
+//-------
+// return the most frequent words with its frequency
+//
+    std::vector<std::string> sText;
+    std::stringstream streamText(text);
+    std::string currText;
+    std::string resultText = "";
 
     /* extract all the words in a string */
-	for (size_t i = 0;  streamText >> currText; i++) {
-	    sText.push_back(currText);
-	}
+    for (size_t i = 0;  streamText >> currText; i++) {
+        sText.push_back(currText);
+    }
 
-	//create an empty node
+    //create an empty node
     trieNode * root = createNode(NULL, '\0', false);
 
-	/* for every words in a string, add to a Trie */
-	for (std::vector<std::string>::const_iterator iterString = sText.begin(); iterString != sText.end(); iterString++) {
-		insertTrie(root, *iterString);
-	}
+    /* for every words in a string, add to a Trie */
+    for (std::vector<std::string>::const_iterator iterString = sText.begin(); iterString != sText.end(); iterString++) {
+        insertTrie(root, *iterString);
+    }
 
-	/* get most frequent word */
-	std::map<std::string, unsigned> mFrequent;
-	unsigned maxCount = 0;
+    /* get most frequent word */
+    std::map<std::string, unsigned> mFrequent;
+    unsigned maxCount = 0;
 
-	/* do a preorder traversal */
+    /* do a preorder traversal */
     traverseTrie(root, maxCount, mFrequent);
 
-	std::map<std::string, unsigned>::iterator it;
-	std::stringstream ss; 
+    std::map<std::string, unsigned>::iterator it;
+    std::stringstream ss;
 
-	/* getting result in format */
-	resultText += "[";
-	for (it = mFrequent.begin(); it != mFrequent.end(); it++) {
-		ss.str(std::string());
-		ss << it->second;
-		resultText += "{" + it->first + ":" +  ss.str() + "}";
-	}
-	resultText += "]";
+    /* getting result & formatting*/
+    resultText += "[";
+    for (it = mFrequent.begin(); it != mFrequent.end(); it++) {
+        ss.str(std::string());
+        ss << it->second;
+        resultText += "{" + it->first + ":" +  ss.str() + "}";
+    }
+    resultText += "]";
 
-	//cleaning
-	sText.clear();
-	mFrequent.clear();
+    //cleaning
+    sText.clear();
+    mFrequent.clear();
     return resultText;
 }

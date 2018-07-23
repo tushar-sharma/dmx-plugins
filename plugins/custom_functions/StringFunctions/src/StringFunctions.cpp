@@ -22,8 +22,8 @@ DMX_CUSTOM_FUNCTION(FrequentWord, DMX_STRING(text), DMX_STRING(input)) {
         text.setNull();
     }
     else {
-        // most frequent word
-		text = StringUtil::frequentWord(input);
+        // most frequent word with count
+        text = StringUtil::frequentWord(input);
     }
 
     return DMX_CUSTOM_FUNCTION_SUCCESS;
