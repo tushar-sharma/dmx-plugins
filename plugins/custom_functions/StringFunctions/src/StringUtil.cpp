@@ -167,6 +167,8 @@ std::string StringUtil::frequentWord(const std::string &text) {
     resultText += "]";
 
     //cleaning
+    //TODO
+    //dellocate pointers
     sText.clear();
     mFrequent.clear();
     return resultText;
